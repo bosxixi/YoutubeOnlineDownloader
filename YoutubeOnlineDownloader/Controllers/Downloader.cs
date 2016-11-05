@@ -28,14 +28,15 @@ namespace YoutubeOnlineDownloader.Controllers
                 Directory.CreateDirectory(path);
             }
 
+            int counter = 1;
             foreach (var video in pl.Urls)
             {
-                DownloadVideo(video, path);
+                DownloadVideo(video, path, counter++);
             }
         }
 
         private readonly string link;
-        private void DownloadVideo(string link, string path)
+        private void DownloadVideo(string link, string path, int index)
         {
             IEnumerable<VideoInfo> videoInfos = DownloadUrlResolver.GetDownloadUrls(link);
             int maxResolution = videoInfos.Max(c => c.Resolution);
@@ -47,7 +48,7 @@ namespace YoutubeOnlineDownloader.Controllers
             {
                 DownloadUrlResolver.DecryptDownloadUrl(video);
             }
-            var videoFileName = GetValidFileName(video.Title + video.VideoExtension);
+            var videoFileName = $"{index}_" + GetValidFileName(video.Title + video.VideoExtension);
             var videoDownloader = new VideoDownloader(video, Path.Combine(path, videoFileName));
 
             videoDownloader.Execute();
